@@ -1,0 +1,89 @@
+<section class="content-header card">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Manage Project</h1>
+      </div>
+      <div class="col-sm-6">
+        <ol class="breadcrumb float-sm-right">
+          <li class="breadcrumb-item"><a href="#">Home</a></li>
+          <li class="breadcrumb-item active">Manage Project</li>
+        </ol>
+      </div>
+    </div>
+  </div><!-- /.container-fluid -->
+</section>
+<div class="container card">
+  <div class="row">
+    <div class="col-md-8">
+    <input type="text" class="form-control" [ngModel]="textSearch"/>
+  </div>
+  <div class="col-md-4">
+    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#addProject">
+      <i class="fas fa-plus"></i>  New Project
+    </button>
+  </div>
+  </div>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Project</th>
+      <th>Description</th>
+      <th style="width: 40px">Action</th>
+    </tr>
+  </thead>
+    <tbody>
+    <tr *ngFor="let project of projects | paginate: { itemsPerPage: 10, currentPage: p }; let i = index ">
+      <td>{{i+1}}</td>
+      <td>{{project.name}}</td>
+      <td>{{project.description}}</td>
+      <td><i class="fa fa-edit text-primary" data-toggle="modal" data-target="#addProject"></i></td>
+    </tr>
+  </tbody>
+</table>
+<pagination-controls (pageChange)="p = $event"></pagination-controls>
+</div>
+
+<div class="modal fade"  bsModal addProject id="addProject">
+  <div class="modal-dialog modal-md">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Add Project</h4>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup] = "frmProject" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="name">Name :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
+              <input type="text" name="name" class="form-control" formControlName="name" id="name" placeholder="Project name" [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
+              <div *ngIf="submitted && f.name.errors" class="text-danger" >
+                <div *ngIf="f.name.errors.required"> Please enter name.</div>
+            </div>
+            </div>
+            </div>
+          <div class="col-md-12">
+            <div class="form-group">
+              <label for="description">Description :</label>
+              <textarea type="text" class="form-control" formControlName="description" id="description" placeholder="Description"></textarea>
+            </div>
+          </div>
+          </div>
+          <!-- /.card-body -->
+          <div class="modal-footer">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Save</button>
+            <button type="button" class="btn btn-danger" data-dismiss="modal"><i class="fas fa-times"></i> Close</button>
+          </div>
+        </form>
+      </div>
+
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

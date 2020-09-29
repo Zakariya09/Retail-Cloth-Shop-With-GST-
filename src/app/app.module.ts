@@ -16,7 +16,6 @@ import { BlockUIHttpModule } from 'ng-block-ui/http';
 import { BlockUIModule } from 'ng-block-ui';
 import { InterceptorProvider } from "src/app/core/intercepter/inteceptorProvider";
 
-
 @NgModule({
   declarations: [
     LoginComponent,

@@ -20,6 +20,10 @@ import {NgxPaginationModule} from 'ngx-pagination';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
 import { AuthGuard } from "src/app/auth/auth.guard";
 import { AuthService } from "src/app/auth/auth.service";
+import { ManageReceiptComponent } from '../pages/manage-receipt/manage-receipt.component';
+import { AddReceiptComponent } from '../pages/add-receipt/add-receipt.component';
+import { NgSelectModule } from '@ng-select/ng-select';
+
 const routes: Routes = [
   // { path: '', redirectTo: '/layout', pathMatch: 'full', data: { title: 'Layout' } },
   {
@@ -33,6 +37,13 @@ const routes: Routes = [
                   component:DashboardComponent,
                   data:{
                     title:'Dashboard'
+                  }
+                },
+                {
+                  path:'default/receipt',
+                  component: ManageReceiptComponent,
+                  data:{
+                    title:'Manage Receipt'
                   }
                 },
                 {
@@ -71,6 +82,13 @@ const routes: Routes = [
                   }
                 },
                 {
+                  path:'default/addReceipt',
+                  component:AddReceiptComponent,
+                  data:{
+                    title:'Add Receipt'
+                  }
+                },
+                {
                   path:'default/change-password',
                   component: ChangePasswordComponent,
                   data:{
@@ -93,7 +111,9 @@ const routes: Routes = [
     ManageImportComponent,
     ManageSalesComponent,
     ManageCreditsComponent,
-    ManageUserComponent
+    ManageUserComponent,
+    ManageReceiptComponent,
+    AddReceiptComponent
   ],
   imports: [
     CommonModule,
@@ -104,7 +124,8 @@ const routes: Routes = [
     NgSelectizeModule,
     BsDatepickerModule.forRoot(),
     NgxPaginationModule,
-    Ng2SearchPipeModule
+    Ng2SearchPipeModule,
+    NgSelectModule
   ],
   exports: [RouterModule],
   bootstrap: [DefaultlayoutComponent],

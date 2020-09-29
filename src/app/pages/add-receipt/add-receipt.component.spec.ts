@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HsnMasterComponent } from './hsn-master.component';
+import { AddReceiptComponent } from './add-receipt.component';
 
-describe('HsnMasterComponent', () => {
-  let component: HsnMasterComponent;
-  let fixture: ComponentFixture<HsnMasterComponent>;
+describe('AddReceiptComponent', () => {
+  let component: AddReceiptComponent;
+  let fixture: ComponentFixture<AddReceiptComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ HsnMasterComponent ]
+      declarations: [ AddReceiptComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(HsnMasterComponent);
+    fixture = TestBed.createComponent(AddReceiptComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

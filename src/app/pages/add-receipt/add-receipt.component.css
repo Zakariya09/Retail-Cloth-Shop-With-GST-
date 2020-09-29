@@ -1,0 +1,36 @@
+.container{
+  padding: 15px;
+}
+.row{
+  margin: 5px;
+}
+.thead-bg{
+  color: white;
+  background: #36D1DC;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #5B86E5, #36D1DC);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #69c9d8, #75c5d1); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+.text-white{
+  color: whitesmoke;
+}
+.gradient{
+  background: linear-gradient(to top, #901962e0, #FF0099);
+  color: white;
+  }
+  .modal-head{
+    color: whitesmoke;
+    background: #FF0099;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #493240, #FF0099);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #493240, #FF0099); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+  .curser{
+    cursor: pointer;
+  }
+
+.mt-35{
+  margin-top: 35px;
+}
+.w-78{
+  width: 78px;
+}

@@ -20,6 +20,7 @@ export class AddReceiptComponent implements OnInit {
   frmReicipt: FormGroup;
   credit: CreditModel;
   subscription: any;
+  gst;
   p =1;
   submitted = false;
   textSearch = '';
@@ -50,12 +51,22 @@ constructor(private commonService: CommonServiceService,
       cgst:[0],
       sgst:[0],
       igst:[0],
+      tax:[0],
       productName:[null],
       quantity:[""],
       rate:[""]
     });
   this.getCredits();
   }
+
+  claculateGST = function(){
+    this.frmReicipt.get('tax').value =  ( this.frmReicipt.get('gst').value / 2) ;
+    console.log(this.frmReicipt.get('tax').value);
+    if(!isNaN(this.frmReicipt.get('tax').value)){
+    this.frmReicipt.get('cgst').setValue(this.frmReicipt.get('tax').value);
+    this.frmReicipt.get('sgst').setValue(this.frmReicipt.get('tax').value);
+  }
+}
 
   backToReceipt(){
    this.router.navigate(['default/receipt']);

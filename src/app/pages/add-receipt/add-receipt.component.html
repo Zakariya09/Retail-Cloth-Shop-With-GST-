@@ -53,7 +53,7 @@
       <label for="gst" class="w-78">GST : (%)</label>
     </div>
       <div class="col-md-2">
-        <input type="text" name="gst" class="form-control" formControlName="gst" id="gst" placeholder="GST"/>
+        <input type="text" name="gst" class="form-control" formControlName="gst" id="gst" [(ngModel)]="gst" (ngModelChange)="claculateGST()" placeholder="GST"/>
     </div>
     <div class="col-md-1">
       <label for="cgst" class="w-78">CGST : (%)</label>
@@ -105,7 +105,7 @@
         <input type="text" name="rate" class="form-control" formControlName="rate" id="quantity" placeholder="rate"/>
       </div>
       <div class="col-md-1">
-        <button class="btn btn-info btn-sm"><i class="fas fa-plus"></i> Add</button>
+        <button type="button" class="btn btn-info btn-sm"><i class="fas fa-plus"></i> Add</button>
       </div>
   </div>
     </form>

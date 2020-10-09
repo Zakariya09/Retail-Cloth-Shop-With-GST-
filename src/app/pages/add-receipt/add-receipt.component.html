@@ -74,7 +74,7 @@
         <input type="text" name="igst" class="form-control" formControlName="igst" id="igst" placeholder="IGST"/>
       </div>
 
-  </div>
+    </div>
   <div class="row" style="margin-top: 20px">
     <div class="col-md-2">
       <label for="productName">Select Product</label>
@@ -102,10 +102,10 @@
       <label for="rate" class="w-78">Rate :</label>
     </div>
       <div class="col-md-2">
-        <input type="text" name="rate" class="form-control" formControlName="rate" id="quantity" placeholder="rate"/>
+        <input type="text" name="rate" class="form-control" formControlName="rate" id="rate" placeholder="rate"/>
       </div>
       <div class="col-md-1">
-        <button type="button" class="btn btn-info btn-sm"><i class="fas fa-plus"></i> Add</button>
+        <button type="button" class="btn btn-info btn-sm" (click)="calc()"><i class="fas fa-plus"></i> Add</button>
       </div>
   </div>
     </form>

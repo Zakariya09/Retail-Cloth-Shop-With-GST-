@@ -27,6 +27,7 @@ export class AddReceiptComponent implements OnInit {
     customerName: '',
     productName: '',
     quantity:0,
+    receiptDate:'',
     rate: 0,
     taxableAmount:0,
     gst: 0,
@@ -39,6 +40,7 @@ export class AddReceiptComponent implements OnInit {
   submitted = false;
   textSearch = '';
   credits: [];
+  products: [];
 
   selectedFile = null;
   @ViewChild('addProject', {static: false}) public addProject: ModalDirective;
@@ -70,7 +72,7 @@ export class AddReceiptComponent implements OnInit {
         quantity:[""],
         rate:[""]
       });
-      this.getCredits();
+      this.getProducts();
     }
 
     claculateGST = function(){
@@ -85,11 +87,14 @@ export class AddReceiptComponent implements OnInit {
     calc(){
       if(this.frmReicipt.get('quantity').value == '' || this.frmReicipt.get('quantity').value == undefined || this.frmReicipt.get('quantity').value  <= 0){
         this.toaster.warningToastr('Quantity should be more than zero!', 'Invalid!', {showCloseButton: true});
+        return;
       }
       if(this.frmReicipt.get('rate').value == '' || this.frmReicipt.get('rate').value == undefined || this.frmReicipt.get('rate').value  <= 0){
         this.toaster.warningToastr('Rate should be more than zero!', 'Invalid!', {showCloseButton: true});
+        return;
       }
       this.invoice.quantity = this.frmReicipt.get('quantity').value;
+      this.invoice.receiptDate = this.frmReicipt.get('receiptDate').value;
       this.invoice.rate = this.frmReicipt.get('rate').value;
       this.invoice.customerName = this.frmReicipt.get('customerName').value;
       this.invoice.productName = this.frmReicipt.get('productName').value;
@@ -102,7 +107,22 @@ export class AddReceiptComponent implements OnInit {
       this.invoice.sgst = totalTaxAmount / 2;
       this.invoice.total = this.invoice.taxableAmount + this.invoice.cgst + this.invoice.sgst;
       this.invoiceArray.push(this.invoice);
+      this. invoice = {
+        customerName: '',
+        productName: '',
+        quantity:0,
+        receiptDate:'',
+        rate: 0,
+        taxableAmount:0,
+        gst: 0,
+        cgst:0,
+        sgst:0,
+        igst: 0,
+        total:0
+      }
       console.log(this.invoiceArray)
+      this.frmReicipt.reset();
+      this.submitted = false;
     }
 
     backToReceipt(){
@@ -122,7 +142,7 @@ export class AddReceiptComponent implements OnInit {
         this.subscription = this.commonService.saveCredit(this.credit).subscribe((response: any) => {
           if (response.status) {
             this.toaster.successToastr('Data saved successfully. ', 'Success!',{showCloseButton: true});
-            this.getCredits();
+            // this.getCredits();
             jQuery('#addCredit').modal('hide');
             //  this.getpackage();
           } else {
@@ -139,7 +159,7 @@ export class AddReceiptComponent implements OnInit {
         this.subscription = this.commonService.updateCredit(this.credit._id, this.credit).subscribe((response: any) => {
           if (response.status) {
             this.toaster.successToastr('Sales updated successfully. ', 'Success!',{showCloseButton: true});
-            this.getCredits();
+            // this.getCredits();
             jQuery('#addCredit').modal('hide');
             //  this.getpackage();
           } else {
@@ -155,19 +175,19 @@ export class AddReceiptComponent implements OnInit {
     get f() { return this.frmCredit.controls; }
 
 
-    //GET credits
-    getCredits(){
-      this.commonService.getCredits().subscribe((response : any)=>{
-        if (response.status) {
-          this.credits = response.data;
-        }else {
-          this.toaster.errorToastr('No credit found!.', 'Oops!',{showCloseButton: true});
-        }
-      }, (error: HttpErrorResponse) => {
-        this.toaster.errorToastr('No credit found!.', 'Oops!',{showCloseButton: true});
-        return;
-      });
-    }
+ //GET project
+ getProducts(){
+  this.commonService.getProducts().subscribe((response : any)=>{
+   if (response.status) {
+     this.products = response.products;
+     }else {
+       this.toaster.errorToastr('No product found!.', 'Oops!',{showCloseButton: true});
+       }
+     }, (error: HttpErrorResponse) => {
+       this.toaster.errorToastr('No product found!.', 'Oops!',{showCloseButton: true});
+       return;
+     });
+}
     //Edit package
     editCredit(data: CreditModel){
       this.frmCredit.controls.date.setValue(this.dateConverter(data.date));
@@ -195,7 +215,7 @@ export class AddReceiptComponent implements OnInit {
           this.commonService.deleteCredit(id).subscribe((response : any)=>{
             if (response.status) {
               this.toaster.successToastr('Deleted successfully. ', 'Success!',{showCloseButton: true});
-              this.getCredits();
+              // this.getCredits();
             }else {
               this.toaster.errorToastr('Error while deleting credit.', 'Oops!',{showCloseButton: true});
             }

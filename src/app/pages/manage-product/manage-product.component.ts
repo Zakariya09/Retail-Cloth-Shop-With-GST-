@@ -65,7 +65,7 @@ selectedFile = null;
     });
  }
  get f() { return this.frmProduct.controls; }
- //GET project
+ //GET products
  getProducts(){
    this.commonService.getProducts().subscribe((response : any)=>{
     if (response.status) {

@@ -141,89 +141,17 @@
         <td>{{data.total}}</td>
 
         <td>
-          <i class="fas fa-edit text-primary curser" (click)="editCredit(data)" data-toggle="modal" data-target="#addCredit"></i> &nbsp;
-          <i class="fas fa-trash text-danger curser" (click)="deleteCredit(data._id)"></i>
+          <i class="fas fa-edit text-primary curser" (click)="editinvoiceRow(i, data)"></i> &nbsp;
+          <i class="fas fa-trash text-danger curser" (click)="removeRow(i,  data)"></i>
         </td>
+      </tr>
+      <tr *ngIf="invoiceArray.length">
+        <td colspan="8"></td>
+        <td>Grand Total</td>
+        <td>{{grandTotal}}</td>
+        <td></td>
       </tr>
     </tbody>
   </table>
   <!-- <pagination-controls (pageChange)="p = $event"></pagination-controls > -->
 </div>
-
-<div class="modal fade" bsModal #addCredit  id="addCredit" data-keyboard="false" data-backdrop="static">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header modal-head">
-        <h4 class="modal-title">Add Receipt</h4>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form  (ngSubmit)="onSubmit()" role="form" [formGroup] = 'frmCredit' autocomplete="off">
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="date">Receipt Date :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-                <input type="text" [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY', isAnimated: true,  adaptivePosition: true }" placeholder="Receipt date" class="form-control" formControlName="date" [ngClass]="{ 'is-invalid': submitted && f.date.errors }" bsDatepicker>
-                <div *ngIf="submitted && f.date.errors" class="text-danger">
-                  <div *ngIf="f.date.errors.required"> Please select date.</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="name">Buyer Name :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-                <input type="text" class="form-control" formControlName="name" id="name" placeholder="name" min="0" [ngClass]="{ 'is-invalid': submitted && f.name.errors }" />
-                <div *ngIf="submitted && f.name.errors" class="text-danger">
-                  <div *ngIf="f.name.errors.required"> Please enter name.</div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="creditAmount">Receipt Amount :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-                <input type="number" class="form-control" formControlName="creditAmount" id="creditAmount" placeholder="Receipt amount" min="0" [ngClass]="{ 'is-invalid': submitted && f.creditAmount.errors }"/>
-                <div *ngIf="submitted && f.creditAmount.errors" class="text-danger">
-                  <div *ngIf="f.creditAmount.errors.required"> Please enter credit amount.</div>
-                </div>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="paidAmount">Paid Amount :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-                <input type="number" class="form-control" formControlName="paidAmount" id="paidAmount" placeholder="Paid amount" min="0"  [ngClass]="{ 'is-invalid': submitted && f.paidAmount.errors }"/>
-                <div *ngIf="submitted && f.paidAmount.errors" class="text-danger">
-                  <div *ngIf="f.paidAmount.errors.required"> Please enter paid amount.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <div class="form-group">
-                <label for="remainingAmount">Remaining Amount :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-                <input type="number" class="form-control" formControlName="remainingAmount" id="remainingAmount" placeholder="Remaining amount" min="0" [ngClass]="{ 'is-invalid': submitted && f.remainingAmount.errors }"/>
-                <div *ngIf="submitted && f.remainingAmount.errors" class="text-danger">
-                  <div *ngIf="f.remainingAmount.errors.required"> Please enter remaining amount.</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="modal-footer ">
-            <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-save"></i> Save</button>
-            <button type="button" class="btn btn-danger btn-sm" data-dismiss="modal"><i class="fas fa-times"></i>Close</button>
-          </div>
-          <!-- /.card-body -->
-        </form>
-      </div>
-
-    </div>
-    <!-- /.modal-content -->
-  </div>
-  <!-- /.modal-dialog -->
-</div>
-<!-- /.modal -->

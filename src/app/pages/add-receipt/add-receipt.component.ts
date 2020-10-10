@@ -20,6 +20,12 @@ export class AddReceiptComponent implements OnInit {
   frmReicipt: FormGroup;
   credit: CreditModel;
   subscription: any;
+  grandTotal = 0;
+  today;
+  custName;
+  taxableAmountSum = 0;
+  sgstSum = 0;
+  cgstSum = 0;
   gst;
   p =1;
   invoiceArray = [];
@@ -36,7 +42,6 @@ export class AddReceiptComponent implements OnInit {
     igst: 0,
     total:0
   }
-  grandTotal;
   submitted = false;
   textSearch = '';
   credits: [];
@@ -73,6 +78,11 @@ export class AddReceiptComponent implements OnInit {
         rate:[""]
       });
       this.getProducts();
+      this.getDate();
+    }
+    getDate(){
+      this.today = new Date();
+      this.frmReicipt.get('receiptDate').setValue(this.today);
     }
 
     claculateGST = function(){
@@ -93,19 +103,36 @@ export class AddReceiptComponent implements OnInit {
         this.toaster.warningToastr('Rate should be more than zero!', 'Invalid!', {showCloseButton: true});
         return;
       }
+      this.frmReicipt.get('receiptDate').setValue(this.today);
+      this.invoice.customerName = this.frmReicipt.get('customerName').value;
+      this.custName = this.frmReicipt.get('customerName').value;
       this.invoice.quantity = this.frmReicipt.get('quantity').value;
       this.invoice.receiptDate = this.frmReicipt.get('receiptDate').value;
       this.invoice.rate = this.frmReicipt.get('rate').value;
       this.invoice.customerName = this.frmReicipt.get('customerName').value;
       this.invoice.productName = this.frmReicipt.get('productName').value;
       this.invoice.taxableAmount =  this.invoice.rate  * this.invoice.quantity;
+      this.taxableAmountSum += this.invoice.taxableAmount;
       this.invoice.gst = this.frmReicipt.get('gst').value;
+      if(this.invoice.gst == undefined || this.invoice.gst == null){
+        this.invoice.cgst = 0;
+        this.invoice.sgst = 0;
+        this.invoice.gst = 0;
+      }
       console.log(this.invoice.taxableAmount);
       let total = this.invoice.taxableAmount;
       let totalTaxAmount = (total * this.invoice.gst) / 100;
       this.invoice.cgst = totalTaxAmount / 2;
       this.invoice.sgst = totalTaxAmount / 2;
+      this.cgstSum +=  this.invoice.cgst;
+      this.sgstSum +=  this.invoice.cgst;
+      if(isNaN(this.cgstSum)){
+        this.cgstSum = 0;
+        this.sgstSum = 0;
+      }
       this.invoice.total = this.invoice.taxableAmount + this.invoice.cgst + this.invoice.sgst;
+      this.invoice.total = parseInt(this.invoice.total.toFixed(2));
+      this.grandTotal += this.invoice.total;
       this.invoiceArray.push(this.invoice);
       this. invoice = {
         customerName: '',
@@ -114,7 +141,7 @@ export class AddReceiptComponent implements OnInit {
         receiptDate:'',
         rate: 0,
         taxableAmount:0,
-        gst: 0,
+        gst: this.invoice.gst,
         cgst:0,
         sgst:0,
         igst: 0,
@@ -123,6 +150,9 @@ export class AddReceiptComponent implements OnInit {
       console.log(this.invoiceArray)
       this.frmReicipt.reset();
       this.submitted = false;
+      this.frmReicipt.get('receiptDate').setValue(this.today);
+      this.frmReicipt.get('customerName').setValue(this.custName);
+      this.frmReicipt.get('gst').setValue(this.invoice.gst);
     }
 
     backToReceipt(){
@@ -175,27 +205,39 @@ export class AddReceiptComponent implements OnInit {
     get f() { return this.frmCredit.controls; }
 
 
- //GET project
- getProducts(){
-  this.commonService.getProducts().subscribe((response : any)=>{
-   if (response.status) {
-     this.products = response.products;
-     }else {
-       this.toaster.errorToastr('No product found!.', 'Oops!',{showCloseButton: true});
-       }
-     }, (error: HttpErrorResponse) => {
-       this.toaster.errorToastr('No product found!.', 'Oops!',{showCloseButton: true});
-       return;
-     });
-}
-    //Edit package
-    editCredit(data: CreditModel){
-      this.frmCredit.controls.date.setValue(this.dateConverter(data.date));
-      this.frmCredit.controls.name.setValue(data.name);
-      this.frmCredit.controls.creditAmount.setValue(data.creditAmount);
-      this.frmCredit.controls.paidAmount.setValue(data.paidAmount);
-      this.frmCredit.controls.remainingAmount.setValue(data.remainingAmount);
-      this.frmCredit.controls._id.setValue(data._id);
+    //GET project
+    getProducts(){
+      this.commonService.getProducts().subscribe((response : any)=>{
+        if (response.status) {
+          this.products = response.products;
+        }else {
+          this.toaster.errorToastr('No product found!.', 'Oops!',{showCloseButton: true});
+        }
+      }, (error: HttpErrorResponse) => {
+        this.toaster.errorToastr('No product found!.', 'Oops!',{showCloseButton: true});
+        return;
+      });
+    }
+
+    //Edit invoiceRow
+    editinvoiceRow(index, data){
+      console.log(data);
+      this.grandTotal -= data.total;
+      this.invoiceArray.splice(index,1);
+      if(!this.invoiceArray.length){
+        this.grandTotal = 0;
+      }
+      this.frmReicipt.get('customerName').setValue(data.customerName);
+      this.frmReicipt.get('productName').setValue(data.productName);
+      this.frmReicipt.get('receiptDate').setValue(data.receiptDate);
+      this.frmReicipt.get('rate').setValue(data.rate);
+      this.frmReicipt.get('quantity').setValue(data.quantity);
+      this.frmReicipt.get('gst').setValue(data.gst);
+      this.frmReicipt.get('cgst').setValue(data.cgst);
+      this.frmReicipt.get('sgst').setValue(data.sgst);
+      this.frmReicipt.get('igst').setValue(data.igst);
+      this.frmReicipt.get('igst').setValue(data.igst);
+
     }
 
     //Delete package
@@ -226,12 +268,17 @@ export class AddReceiptComponent implements OnInit {
         }});
       }
 
-      //package Date Conversion
+      //Package Date Conversion
       dateConverter(date){
         var dateArray = date.split('-');
         var dateStr = dateArray[1] + '/' + dateArray[0] + '/' + dateArray[2];
         var newDate = new Date( dateStr);
         return newDate;
+      }
+
+      removeRow(index, data){
+        this.invoiceArray.splice(index,1);
+        this.grandTotal = this.grandTotal - data.total;
       }
 
       // clear form value

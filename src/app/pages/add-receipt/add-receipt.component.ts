@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 })
 export class AddReceiptComponent implements OnInit {
   frmCredit: FormGroup;
-  frmReicipt: FormGroup;
+  frmReiceipt: FormGroup;
   credit: CreditModel;
   subscription: any;
   grandTotal = 0;
@@ -65,7 +65,7 @@ export class AddReceiptComponent implements OnInit {
         remainingAmount: [0, Validators.required]
       });
 
-      this.frmReicipt = this.formBuilder.group({
+      this.frmReiceipt = this.formBuilder.group({
         customerName: ["", Validators.required],
         receiptDate: ["", Validators.required],
         gst:[0],
@@ -82,38 +82,42 @@ export class AddReceiptComponent implements OnInit {
     }
     getDate(){
       this.today = new Date();
-      this.frmReicipt.get('receiptDate').setValue(this.today);
+      this.frmReiceipt.get('receiptDate').setValue(this.today);
     }
 
     claculateGST = function(){
-      this.frmReicipt.get('tax').value =  ( this.frmReicipt.get('gst').value / 2) ;
-      console.log(this.frmReicipt.get('tax').value);
-      if(!isNaN(this.frmReicipt.get('tax').value)){
-        this.frmReicipt.get('cgst').setValue(this.frmReicipt.get('tax').value);
-        this.frmReicipt.get('sgst').setValue(this.frmReicipt.get('tax').value);
+      this.frmReiceipt.get('tax').value =  ( this.frmReiceipt.get('gst').value / 2) ;
+      console.log(this.frmReiceipt.get('tax').value);
+      if(!isNaN(this.frmReiceipt.get('tax').value)){
+        this.frmReiceipt.get('cgst').setValue(this.frmReiceipt.get('tax').value);
+        this.frmReiceipt.get('sgst').setValue(this.frmReiceipt.get('tax').value);
       }
     }
 
     calc(){
-      if(this.frmReicipt.get('quantity').value == '' || this.frmReicipt.get('quantity').value == undefined || this.frmReicipt.get('quantity').value  <= 0){
+      if(this.frmReiceipt.get('productName').value == '' || this.frmReiceipt.get('productName').value == undefined || this.frmReiceipt.get('productName').value  <= 0){
+        this.toaster.warningToastr('Please select product!', 'Invalid!', {showCloseButton: true});
+        return;
+      }
+      if(this.frmReiceipt.get('quantity').value == '' || this.frmReiceipt.get('quantity').value == undefined || this.frmReiceipt.get('quantity').value  <= 0){
         this.toaster.warningToastr('Quantity should be more than zero!', 'Invalid!', {showCloseButton: true});
         return;
       }
-      if(this.frmReicipt.get('rate').value == '' || this.frmReicipt.get('rate').value == undefined || this.frmReicipt.get('rate').value  <= 0){
+      if(this.frmReiceipt.get('rate').value == '' || this.frmReiceipt.get('rate').value == undefined || this.frmReiceipt.get('rate').value  <= 0){
         this.toaster.warningToastr('Rate should be more than zero!', 'Invalid!', {showCloseButton: true});
         return;
       }
-      this.frmReicipt.get('receiptDate').setValue(this.today);
-      this.invoice.customerName = this.frmReicipt.get('customerName').value;
-      this.custName = this.frmReicipt.get('customerName').value;
-      this.invoice.quantity = this.frmReicipt.get('quantity').value;
-      this.invoice.receiptDate = this.frmReicipt.get('receiptDate').value;
-      this.invoice.rate = this.frmReicipt.get('rate').value;
-      this.invoice.customerName = this.frmReicipt.get('customerName').value;
-      this.invoice.productName = this.frmReicipt.get('productName').value;
+      this.frmReiceipt.get('receiptDate').setValue(this.today);
+      this.invoice.customerName = this.frmReiceipt.get('customerName').value;
+      this.custName = this.frmReiceipt.get('customerName').value;
+      this.invoice.quantity = this.frmReiceipt.get('quantity').value;
+      this.invoice.receiptDate = this.frmReiceipt.get('receiptDate').value;
+      this.invoice.rate = this.frmReiceipt.get('rate').value;
+      this.invoice.customerName = this.frmReiceipt.get('customerName').value;
+      this.invoice.productName = this.frmReiceipt.get('productName').value;
       this.invoice.taxableAmount =  this.invoice.rate  * this.invoice.quantity;
       this.taxableAmountSum += this.invoice.taxableAmount;
-      this.invoice.gst = this.frmReicipt.get('gst').value;
+      this.invoice.gst = this.frmReiceipt.get('gst').value;
       if(this.invoice.gst == undefined || this.invoice.gst == null){
         this.invoice.cgst = 0;
         this.invoice.sgst = 0;
@@ -148,11 +152,11 @@ export class AddReceiptComponent implements OnInit {
         total:0
       }
       console.log(this.invoiceArray)
-      this.frmReicipt.reset();
+      this.frmReiceipt.reset();
       this.submitted = false;
-      this.frmReicipt.get('receiptDate').setValue(this.today);
-      this.frmReicipt.get('customerName').setValue(this.custName);
-      this.frmReicipt.get('gst').setValue(this.invoice.gst);
+      this.frmReiceipt.get('receiptDate').setValue(this.today);
+      this.frmReiceipt.get('customerName').setValue(this.custName);
+      this.frmReiceipt.get('gst').setValue(this.invoice.gst);
     }
 
     backToReceipt(){
@@ -227,16 +231,16 @@ export class AddReceiptComponent implements OnInit {
       if(!this.invoiceArray.length){
         this.grandTotal = 0;
       }
-      this.frmReicipt.get('customerName').setValue(data.customerName);
-      this.frmReicipt.get('productName').setValue(data.productName);
-      this.frmReicipt.get('receiptDate').setValue(data.receiptDate);
-      this.frmReicipt.get('rate').setValue(data.rate);
-      this.frmReicipt.get('quantity').setValue(data.quantity);
-      this.frmReicipt.get('gst').setValue(data.gst);
-      this.frmReicipt.get('cgst').setValue(data.cgst);
-      this.frmReicipt.get('sgst').setValue(data.sgst);
-      this.frmReicipt.get('igst').setValue(data.igst);
-      this.frmReicipt.get('igst').setValue(data.igst);
+      this.frmReiceipt.get('customerName').setValue(data.customerName);
+      this.frmReiceipt.get('productName').setValue(data.productName);
+      this.frmReiceipt.get('receiptDate').setValue(data.receiptDate);
+      this.frmReiceipt.get('rate').setValue(data.rate);
+      this.frmReiceipt.get('quantity').setValue(data.quantity);
+      this.frmReiceipt.get('gst').setValue(data.gst);
+      this.frmReiceipt.get('cgst').setValue(data.cgst);
+      this.frmReiceipt.get('sgst').setValue(data.sgst);
+      this.frmReiceipt.get('igst').setValue(data.igst);
+      this.frmReiceipt.get('igst').setValue(data.igst);
 
     }
 

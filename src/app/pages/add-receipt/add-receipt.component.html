@@ -25,7 +25,7 @@
     </div>
   </div>
   <div>
-    <form  (ngSubmit)="onSubmit()" class="form-horizontal" role="form" [formGroup] = 'frmReicipt' autocomplete="off">
+    <form  (ngSubmit)="onSubmit()" class="form-horizontal" role="form" [formGroup] = 'frmReiceipt' autocomplete="off">
   <div class="row">
     <div class="col-md-2">
       <label for="customerName">Customer Name :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
@@ -76,7 +76,7 @@
     </div>
   <div class="row" style="margin-top: 20px">
     <div class="col-md-2">
-      <label for="productName">Select Product</label>
+      <label for="productName">Select Product :</label>
     </div>
     <div class="col-md-3">
       <div class="form-group">
@@ -88,7 +88,6 @@
           formControlName="productName"
          placeholder="Select type" >
       </ng-select>
-
     </div>
   </div>
   <div class="col-md-1">

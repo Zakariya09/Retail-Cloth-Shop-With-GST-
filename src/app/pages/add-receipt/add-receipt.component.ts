@@ -19,10 +19,20 @@ export class AddReceiptComponent implements OnInit {
   frmCredit: FormGroup;
   frmReiceipt: FormGroup;
   credit: CreditModel;
+  receipt = {
+    name: '',
+    receiptDate:'',
+    taxableAmount:0,
+    cgst: 0,
+    sgst: 0,
+    grandTotal:0,
+    products: []
+  };
   subscription: any;
   grandTotal = 0;
   today;
   custName;
+  rcDate;
   taxableAmountSum = 0;
   sgstSum = 0;
   cgstSum = 0;
@@ -110,6 +120,7 @@ export class AddReceiptComponent implements OnInit {
       this.frmReiceipt.get('receiptDate').setValue(this.today);
       this.invoice.customerName = this.frmReiceipt.get('customerName').value;
       this.custName = this.frmReiceipt.get('customerName').value;
+      this.rcDate = this.frmReiceipt.get('receiptDate').value;
       this.invoice.quantity = this.frmReiceipt.get('quantity').value;
       this.invoice.receiptDate = this.frmReiceipt.get('receiptDate').value;
       this.invoice.rate = this.frmReiceipt.get('rate').value;
@@ -165,6 +176,15 @@ export class AddReceiptComponent implements OnInit {
 
     //POST package
     onSubmit(){
+      this.receipt.name = this.custName;
+      this.receipt.receiptDate = this.rcDate ;
+      this.receipt.taxableAmount = this.taxableAmountSum;
+      this.receipt.cgst = this.cgstSum;
+      this.receipt.sgst = this.sgstSum;
+      this.receipt.grandTotal = this.grandTotal;
+      this.receipt.products = this.invoiceArray;
+      console.log(this.receipt);
+      return
       this.submitted = true;
       if (this.frmCredit.invalid) {
         this.toaster.warningToastr('Please enter mendatory fields.', 'Invalid!', {showCloseButton: true});
@@ -281,8 +301,12 @@ export class AddReceiptComponent implements OnInit {
       }
 
       removeRow(index, data){
+        console.log(data);
         this.invoiceArray.splice(index,1);
         this.grandTotal = this.grandTotal - data.total;
+        this.taxableAmountSum = this.taxableAmountSum - data.taxableAmount;
+        this.cgstSum = this.cgstSum - data.cgst;
+        this.sgstSum = this.sgstSum - data.sgst;
       }
 
       // clear form value

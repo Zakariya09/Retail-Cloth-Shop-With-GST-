@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonServiceService } from "src/app/core/services/common-service.service";
-import { CreditModel } from "src/app/models/credit.model";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
 import { HttpErrorResponse } from '@angular/common/http';
 import { ModalDirective } from 'ngx-bootstrap/modal';
@@ -17,13 +16,24 @@ import { Router } from '@angular/router';
   styleUrls: ['./manage-receipt.component.css']
 })
 export class ManageReceiptComponent implements OnInit {
-  frmCredit: FormGroup;
-  credit: CreditModel;
+  frmreceipt: FormGroup;
   subscription: any;
   p =1;
+  receiptData = {
+    name:'',
+    taxableAmount:0,
+    totalInWords: '',
+    mobileNumber:'',
+    igst:0,
+    cgst:0,
+    sgst: 0,
+    receiptDate:'',
+    grandTotal:0,
+    products: []
+  };
   submitted = false;
   textSearch = '';
-  credits: [];
+  receipts: [];
   selectedFile = null;
 @ViewChild('addProject', {static: false}) public addProject: ModalDirective;
 constructor(private commonService: CommonServiceService,
@@ -33,92 +43,51 @@ constructor(private commonService: CommonServiceService,
     ) { }
 
   ngOnInit() {
-    this.frmCredit =  this.formBuilder.group({
+    this.frmreceipt =  this.formBuilder.group({
       _id: [0],
       date: [, Validators.required],
       name: [, Validators.required],
-      creditAmount: [0, Validators.required],
+      receiptAmount: [0, Validators.required],
       paidAmount: [0, Validators.required],
       remainingAmount: [0, Validators.required]
     });
-  this.getCredits();
+  this.getReceipt();
   }
 
   addReceipt(){
    this.router.navigate(['default/addReceipt']);
   }
 
-   //POST package
-   onSubmit(){
-    this.submitted = true;
-    if (this.frmCredit.invalid) {
-      this.toaster.warningToastr('Please enter mendatory fields.', 'Invalid!', {showCloseButton: true});
-         return;
-     }
-     this.credit = this.frmCredit.value;
-     if(this.credit._id == null){
-     this.credit.date = moment(this.frmCredit.value.date).format('DD-MM-YYYY') ;
-      this.subscription = this.commonService.saveCredit(this.credit).subscribe((response: any) => {
-      if (response.status) {
-       this.toaster.successToastr('Data saved successfully. ', 'Success!',{showCloseButton: true});
-       this.getCredits();
-       jQuery('#addCredit').modal('hide');
-      //  this.getpackage();
-      } else {
-      this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
 
-      }
-    }, (error: HttpErrorResponse) => {
-      this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
-      return;
-    });
-  }
-  else{
-    this.credit.date = moment(this.frmCredit.value.date).format('DD-MM-YYYY') ;
-    this.subscription = this.commonService.updateCredit(this.credit._id, this.credit).subscribe((response: any) => {
-      if (response.status) {
-       this.toaster.successToastr('Sales updated successfully. ', 'Success!',{showCloseButton: true});
-       this.getCredits();
-       jQuery('#addCredit').modal('hide');
-      //  this.getpackage();
-      } else {
-      this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
-
-      }
-    }, (error: HttpErrorResponse) => {
-      this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
-      return;
-    });
-  }
-  }
-  get f() { return this.frmCredit.controls; }
+  get f() { return this.frmreceipt.controls; }
 
 
-  //GET credits
- getCredits(){
-  this.commonService.getCredits().subscribe((response : any)=>{
+  //GET receipts
+ getReceipt(){
+  this.commonService.getReceipt().subscribe((response : any)=>{
     if (response.status) {
-    this.credits = response.data;
+    this.receipts = response.data;
+    console.log(this.receipts);
     }else {
-      this.toaster.errorToastr('No credit found!.', 'Oops!',{showCloseButton: true});
+      this.toaster.errorToastr('No receipt found!.', 'Oops!',{showCloseButton: true});
       }
     }, (error: HttpErrorResponse) => {
-      this.toaster.errorToastr('No credit found!.', 'Oops!',{showCloseButton: true});
+      this.toaster.errorToastr('No receipt found!.', 'Oops!',{showCloseButton: true});
       return;
     });
 }
 //Edit package
-editCredit(data: CreditModel){
-  this.frmCredit.controls.date.setValue(this.dateConverter(data.date));
-  this.frmCredit.controls.name.setValue(data.name);
-  this.frmCredit.controls.creditAmount.setValue(data.creditAmount);
-  this.frmCredit.controls.paidAmount.setValue(data.paidAmount);
-  this.frmCredit.controls.remainingAmount.setValue(data.remainingAmount);
-  this.frmCredit.controls._id.setValue(data._id);
+editReceipt(data){
+  this.frmreceipt.controls.date.setValue(this.dateConverter(data.date));
+  this.frmreceipt.controls.name.setValue(data.name);
+  this.frmreceipt.controls.receiptAmount.setValue(data.receiptAmount);
+  this.frmreceipt.controls.paidAmount.setValue(data.paidAmount);
+  this.frmreceipt.controls.remainingAmount.setValue(data.remainingAmount);
+  this.frmreceipt.controls._id.setValue(data._id);
  }
 
  //Delete package
-deleteCredit(id){
+ deleteReceipt(id){
   Swal.fire({
     title: 'Are you sure?',
     text: 'You will not be able to recover this record!',
@@ -131,19 +100,26 @@ deleteCredit(id){
   .then((result) => {
     if (result.value) {
 
-  this.commonService.deleteCredit(id).subscribe((response : any)=>{
+  this.commonService.deleteReceipt(id).subscribe((response : any)=>{
     if (response.status) {
       this.toaster.successToastr('Deleted successfully. ', 'Success!',{showCloseButton: true});
-      this.getCredits();
+      this.getReceipt();
     }else {
-      this.toaster.errorToastr('Error while deleting credit.', 'Oops!',{showCloseButton: true});
+      this.toaster.errorToastr('Error while deleting receipt.', 'Oops!',{showCloseButton: true});
       }
     }, (error: HttpErrorResponse) => {
-      this.toaster.errorToastr('Error while deleting credit.', 'Oops!',{showCloseButton: true});
+      this.toaster.errorToastr('Error while deleting receipt.', 'Oops!',{showCloseButton: true});
       return;
     });
   }});
-}
+ }
+
+ viewRecipt(data){
+  this.receiptData = data;
+  this.receiptData.totalInWords = this.number2text(data.grandTotal);
+
+  jQuery('#viewReceipt').modal('show');
+ }
 
 //package Date Conversion
 dateConverter(date){
@@ -153,9 +129,114 @@ dateConverter(date){
   return newDate;
 }
 
+PrintPanel(div) {
+  var divToPrint = document.getElementById(div);
+  var htmlToPrint = '' +
+  '<style type="text/css">' +
+  'table th,td {' +
+  'border:1px solid #000;' +
+  'padding:0.3em;' +
+  'text-align:center;' +
+  '};' +
+  '</style>';
+  htmlToPrint += divToPrint.outerHTML;
+  let newWin = window.open(`/default/receipt`);
+  newWin.document.write(htmlToPrint);
+  newWin.print();
+  newWin.close();
+}
+
+   //Convert Number to To Text
+   number2text(value) {
+    var fraction = Math.round(this.frac(value)*100);
+    var f_text  = "";
+
+    if(fraction > 0) {
+      f_text = "And "+ this.convert_number(fraction)+" Paise";
+    }
+
+    return this.convert_number(value)+" Rupee "+f_text+" Only";
+  }
+
+  frac(f) {
+    return f % 1;
+  }
+
+  convert_number(number)
+  {
+    if ((number < 0) || (number > 999999999))
+    {
+      return "NUMBER OUT OF RANGE!";
+    }
+    var Gn = Math.floor(number / 10000000);  /* Crore */
+    number -= Gn * 10000000;
+    var kn = Math.floor(number / 100000);     /* lakhs */
+    number -= kn * 100000;
+    var Hn = Math.floor(number / 1000);      /* thousand */
+    number -= Hn * 1000;
+    var Dn = Math.floor(number / 100);       /* Tens (deca) */
+    number = number % 100;               /* Ones */
+    var tn= Math.floor(number / 10);
+    var one=Math.floor(number % 10);
+    var res = "";
+
+    if (Gn>0)
+    {
+      res += (this.convert_number(Gn) + " Crore");
+    }
+    if (kn>0)
+    {
+      res += (((res=="") ? "" : " ") +
+      this.convert_number(kn) + " Lakh");
+    }
+    if (Hn>0)
+    {
+      res += (((res=="") ? "" : " ") +
+      this.convert_number(Hn) + " Thousand");
+    }
+
+    if (Dn)
+    {
+      res += (((res=="") ? "" : " ") +
+      this.convert_number(Dn) + " Hundred");
+    }
+
+
+    var ones = Array("", "One", "Two", "Three", "Four", "Five", "Six","Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen","Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen","Nineteen");
+    var tens = Array("", "", "Twenty", "Thirty", "Fourty", "Fifty", "Sixty","Seventy", "Eighty", "Ninety");
+
+    if (tn>0 || one>0)
+    {
+      if (!(res==""))
+      {
+        res += " And ";
+      }
+      if (tn < 2)
+      {
+        res += ones[tn * 10 + one];
+      }
+      else
+      {
+
+        res += tens[tn];
+        if (one>0)
+        {
+          res += ("-" + ones[one]);
+        }
+      }
+    }
+
+    if (res=="")
+    {
+      res = "zero";
+    }
+    return res;
+  }
+
+
 // clear form value
 clearForm() {
-  this.frmCredit.reset();
+  this.frmreceipt.reset();
   this.submitted = false;
 }
 }

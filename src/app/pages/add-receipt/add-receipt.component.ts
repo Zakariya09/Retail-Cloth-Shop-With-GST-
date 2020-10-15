@@ -16,11 +16,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./add-receipt.component.css']
 })
 export class AddReceiptComponent implements OnInit {
-  frmCredit: FormGroup;
-  frmReiceipt: FormGroup;
+  frmReceipt: FormGroup;
   credit: CreditModel;
   receipt = {
+    _id:'',
     name: '',
+    mobileNumber:'',
     receiptDate:'',
     taxableAmount:0,
     cgst: 0,
@@ -30,6 +31,7 @@ export class AddReceiptComponent implements OnInit {
   };
   subscription: any;
   grandTotal = 0;
+  mobileNumber;
   today;
   custName;
   rcDate;
@@ -66,18 +68,10 @@ export class AddReceiptComponent implements OnInit {
     ) { }
 
     ngOnInit() {
-      this.frmCredit =  this.formBuilder.group({
-        _id: [0],
-        date: [, Validators.required],
-        name: [, Validators.required],
-        creditAmount: [0, Validators.required],
-        paidAmount: [0, Validators.required],
-        remainingAmount: [0, Validators.required]
-      });
-
-      this.frmReiceipt = this.formBuilder.group({
+      this.frmReceipt = this.formBuilder.group({
         customerName: ["", Validators.required],
         receiptDate: ["", Validators.required],
+        mobileNumber: [""],
         gst:[0],
         cgst:[0],
         sgst:[0],
@@ -90,51 +84,55 @@ export class AddReceiptComponent implements OnInit {
       this.getProducts();
       this.getDate();
     }
+
+    //Set Current Day Date to the receipt date
     getDate(){
       this.today = new Date();
-      this.frmReiceipt.get('receiptDate').setValue(this.today);
+      this.frmReceipt.get('receiptDate').setValue(this.today);
     }
 
+    //GST SUM calculation Start
     claculateGST = function(){
-      this.frmReiceipt.get('tax').value =  ( this.frmReiceipt.get('gst').value / 2) ;
-      console.log(this.frmReiceipt.get('tax').value);
-      if(!isNaN(this.frmReiceipt.get('tax').value)){
-        this.frmReiceipt.get('cgst').setValue(this.frmReiceipt.get('tax').value);
-        this.frmReiceipt.get('sgst').setValue(this.frmReiceipt.get('tax').value);
+      this.frmReceipt.get('tax').value =  ( this.frmReceipt.get('gst').value / 2) ;
+      console.log(this.frmReceipt.get('tax').value);
+      if(!isNaN(this.frmReceipt.get('tax').value)){
+        this.frmReceipt.get('cgst').setValue(this.frmReceipt.get('tax').value);
+        this.frmReceipt.get('sgst').setValue(this.frmReceipt.get('tax').value);
       }
     }
 
+    //GST calculation Start
     calc(){
-      if(this.frmReiceipt.get('productName').value == '' || this.frmReiceipt.get('productName').value == undefined || this.frmReiceipt.get('productName').value  <= 0){
+      if(this.frmReceipt.get('productName').value == '' || this.frmReceipt.get('productName').value == undefined || this.frmReceipt.get('productName').value  <= 0){
         this.toaster.warningToastr('Please select product!', 'Invalid!', {showCloseButton: true});
         return;
       }
-      if(this.frmReiceipt.get('quantity').value == '' || this.frmReiceipt.get('quantity').value == undefined || this.frmReiceipt.get('quantity').value  <= 0){
+      if(this.frmReceipt.get('quantity').value == '' || this.frmReceipt.get('quantity').value == undefined || this.frmReceipt.get('quantity').value  <= 0){
         this.toaster.warningToastr('Quantity should be more than zero!', 'Invalid!', {showCloseButton: true});
         return;
       }
-      if(this.frmReiceipt.get('rate').value == '' || this.frmReiceipt.get('rate').value == undefined || this.frmReiceipt.get('rate').value  <= 0){
+      if(this.frmReceipt.get('rate').value == '' || this.frmReceipt.get('rate').value == undefined || this.frmReceipt.get('rate').value  <= 0){
         this.toaster.warningToastr('Rate should be more than zero!', 'Invalid!', {showCloseButton: true});
         return;
       }
-      this.frmReiceipt.get('receiptDate').setValue(this.today);
-      this.invoice.customerName = this.frmReiceipt.get('customerName').value;
-      this.custName = this.frmReiceipt.get('customerName').value;
-      this.rcDate = this.frmReiceipt.get('receiptDate').value;
-      this.invoice.quantity = this.frmReiceipt.get('quantity').value;
-      this.invoice.receiptDate = this.frmReiceipt.get('receiptDate').value;
-      this.invoice.rate = this.frmReiceipt.get('rate').value;
-      this.invoice.customerName = this.frmReiceipt.get('customerName').value;
-      this.invoice.productName = this.frmReiceipt.get('productName').value;
+      this.frmReceipt.get('receiptDate').setValue(this.today);
+      this.mobileNumber = this.frmReceipt.get('mobileNumber').value;
+      this.invoice.customerName = this.frmReceipt.get('customerName').value;
+      this.custName = this.frmReceipt.get('customerName').value;
+      this.rcDate = this.frmReceipt.get('receiptDate').value;
+      this.invoice.quantity = this.frmReceipt.get('quantity').value;
+      this.invoice.receiptDate = this.frmReceipt.get('receiptDate').value;
+      this.invoice.rate = this.frmReceipt.get('rate').value;
+      this.invoice.customerName = this.frmReceipt.get('customerName').value;
+      this.invoice.productName = this.frmReceipt.get('productName').value;
       this.invoice.taxableAmount =  this.invoice.rate  * this.invoice.quantity;
       this.taxableAmountSum += this.invoice.taxableAmount;
-      this.invoice.gst = this.frmReiceipt.get('gst').value;
+      this.invoice.gst = this.frmReceipt.get('gst').value;
       if(this.invoice.gst == undefined || this.invoice.gst == null){
         this.invoice.cgst = 0;
         this.invoice.sgst = 0;
         this.invoice.gst = 0;
       }
-      console.log(this.invoice.taxableAmount);
       let total = this.invoice.taxableAmount;
       let totalTaxAmount = (total * this.invoice.gst) / 100;
       this.invoice.cgst = totalTaxAmount / 2;
@@ -163,11 +161,12 @@ export class AddReceiptComponent implements OnInit {
         total:0
       }
       console.log(this.invoiceArray)
-      this.frmReiceipt.reset();
+      this.frmReceipt.reset();
       this.submitted = false;
-      this.frmReiceipt.get('receiptDate').setValue(this.today);
-      this.frmReiceipt.get('customerName').setValue(this.custName);
-      this.frmReiceipt.get('gst').setValue(this.invoice.gst);
+      this.frmReceipt.get('receiptDate').setValue(this.today);
+      this.frmReceipt.get('customerName').setValue(this.custName);
+      this.frmReceipt.get('mobileNumber').setValue(this.mobileNumber);
+      this.frmReceipt.get('gst').setValue(this.invoice.gst);
     }
 
     backToReceipt(){
@@ -183,24 +182,44 @@ export class AddReceiptComponent implements OnInit {
       this.receipt.sgst = this.sgstSum;
       this.receipt.grandTotal = this.grandTotal;
       this.receipt.products = this.invoiceArray;
+      this.receipt.mobileNumber = this.mobileNumber
+
       console.log(this.receipt);
-      return
+
       this.submitted = true;
-      if (this.frmCredit.invalid) {
+      if (this.frmReceipt.invalid) {
         this.toaster.warningToastr('Please enter mendatory fields.', 'Invalid!', {showCloseButton: true});
         return;
       }
-      this.credit = this.frmCredit.value;
-      if(this.credit._id == null){
-        this.credit.date = moment(this.frmCredit.value.date).format('DD-MM-YYYY') ;
-        this.subscription = this.commonService.saveCredit(this.credit).subscribe((response: any) => {
+      if(this.receipt._id == ''){
+        console.log('inside save');
+        this.receipt.receiptDate = moment(this.frmReceipt.value.date).format('DD-MM-YYYY') ;
+        this.subscription = this.commonService.saveReceipt(this.receipt).subscribe((response: any) => {
           if (response.status) {
-            this.toaster.successToastr('Data saved successfully. ', 'Success!',{showCloseButton: true});
+            this.toaster.successToastr('Receipt saved successfully. ', 'Success!',{showCloseButton: true});
+            this.receipt = {
+              _id:'',
+              name: '',
+              mobileNumber:'',
+              receiptDate:'',
+              taxableAmount:0,
+              cgst: 0,
+              sgst: 0,
+              grandTotal:0,
+              products: []
+            };
+            this.taxableAmountSum =0;
+            this.cgstSum = 0;
+            this.sgstSum = 0;
+            this.grandTotal = 0
+            this.invoiceArray=[];
+            this.frmReceipt.reset();
+            this.submitted =false;
             // this.getCredits();
-            jQuery('#addCredit').modal('hide');
+            // jQuery('#addCredit').modal('hide');
             //  this.getpackage();
           } else {
-            this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
+            this.toaster.errorToastr('Error while saving receipt.', 'Oops!',{showCloseButton: true});
 
           }
         }, (error: HttpErrorResponse) => {
@@ -209,24 +228,36 @@ export class AddReceiptComponent implements OnInit {
         });
       }
       else{
-        this.credit.date = moment(this.frmCredit.value.date).format('DD-MM-YYYY') ;
-        this.subscription = this.commonService.updateCredit(this.credit._id, this.credit).subscribe((response: any) => {
+        console.log('inside update');
+        this.receipt.receiptDate = moment(this.frmReceipt.value.date).format('DD-MM-YYYY') ;
+        this.subscription = this.commonService.updateCredit(this.receipt._id, this.receipt).subscribe((response: any) => {
           if (response.status) {
             this.toaster.successToastr('Sales updated successfully. ', 'Success!',{showCloseButton: true});
             // this.getCredits();
-            jQuery('#addCredit').modal('hide');
-            //  this.getpackage();
+            this.receipt = {
+              _id:'',
+              name: '',
+              mobileNumber:'',
+              receiptDate:'',
+              taxableAmount:0,
+              cgst: 0,
+              sgst: 0,
+              grandTotal:0,
+              products: []
+            };
+            this.frmReceipt.reset();
+            this.submitted =false
+            this.invoiceArray=[];
           } else {
-            this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
-
+            this.toaster.errorToastr('Error while saving receipt.', 'Oops!',{showCloseButton: true});
           }
         }, (error: HttpErrorResponse) => {
-          this.toaster.errorToastr('Error while saving credit.', 'Oops!',{showCloseButton: true});
+          this.toaster.errorToastr('Error while saving receipt.', 'Oops!',{showCloseButton: true});
           return;
         });
       }
     }
-    get f() { return this.frmCredit.controls; }
+    get f() { return this.frmReceipt.controls; }
 
 
     //GET project
@@ -251,16 +282,16 @@ export class AddReceiptComponent implements OnInit {
       if(!this.invoiceArray.length){
         this.grandTotal = 0;
       }
-      this.frmReiceipt.get('customerName').setValue(data.customerName);
-      this.frmReiceipt.get('productName').setValue(data.productName);
-      this.frmReiceipt.get('receiptDate').setValue(data.receiptDate);
-      this.frmReiceipt.get('rate').setValue(data.rate);
-      this.frmReiceipt.get('quantity').setValue(data.quantity);
-      this.frmReiceipt.get('gst').setValue(data.gst);
-      this.frmReiceipt.get('cgst').setValue(data.cgst);
-      this.frmReiceipt.get('sgst').setValue(data.sgst);
-      this.frmReiceipt.get('igst').setValue(data.igst);
-      this.frmReiceipt.get('igst').setValue(data.igst);
+      this.frmReceipt.get('customerName').setValue(data.customerName);
+      this.frmReceipt.get('productName').setValue(data.productName);
+      this.frmReceipt.get('receiptDate').setValue(data.receiptDate);
+      this.frmReceipt.get('rate').setValue(data.rate);
+      this.frmReceipt.get('quantity').setValue(data.quantity);
+      this.frmReceipt.get('gst').setValue(data.gst);
+      this.frmReceipt.get('cgst').setValue(data.cgst);
+      this.frmReceipt.get('sgst').setValue(data.sgst);
+      this.frmReceipt.get('igst').setValue(data.igst);
+      this.frmReceipt.get('igst').setValue(data.igst);
 
     }
 
@@ -311,7 +342,7 @@ export class AddReceiptComponent implements OnInit {
 
       // clear form value
       clearForm() {
-        this.frmCredit.reset();
+        this.frmReceipt.reset();
         this.submitted = false;
       }
     }

@@ -25,142 +25,143 @@
     </div>
   </div>
   <div>
-    <form  (ngSubmit)="onSubmit()" class="form-horizontal" role="form" [formGroup] = 'frmReiceipt' autocomplete="off">
-  <div class="row">
-    <div class="col-md-2">
-      <label for="customerName">Customer Name :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-    </div>
-    <div class="col-md-5">
-      <div class="form-group">
-        <input type="text" name="customerName" class="form-control" formControlName="customerName" id="customerName" placeholder="Customer name" [ngClass]="{ 'is-invalid': submitted && f.customerName.errors }"/>
-        <div *ngIf="submitted && f.customerName.errors" class="text-danger">
-          <div *ngIf="f.customerName.errors.required"> Please enter customer name.</div>
+    <form  (ngSubmit)="onSubmit()" class="form-horizontal" role="form" [formGroup] = 'frmReceipt' autocomplete="off">
+      <div class="row">
+        <div class="col-md-2">
+          <label for="customerName">Customer Name :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
+        </div>
+        <div class="col-md-5">
+          <div class="form-group">
+            <input type="text" name="customerName" class="form-control" formControlName="customerName" id="customerName" placeholder="Customer name" [ngClass]="{ 'is-invalid': submitted && f.customerName.errors }"/>
+            <div *ngIf="submitted && f.customerName.errors" class="text-danger">
+              <div *ngIf="f.customerName.errors.required"> Please enter customer name.</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <label for="receiptDate">Receipt Date :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <input type="text" name="receiptDate" [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY', isAnimated: true,  adaptivePosition: true }" placeholder="Receipt date" class="form-control" formControlName="receiptDate" [ngClass]="{ 'is-invalid': submitted && f.receiptDate.errors }" bsDatepicker style="margin-left: -28px;">
+            <div *ngIf="submitted && f.receiptDate.errors" class="text-danger">
+              <div *ngIf="f.receiptDate.errors.required"> Please enter receipt name.</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-1">
+          <label for="mobileNumber" class="w-78">Mobile No. : </label>
+        </div>
+        <div class="col-md-2">
+          <input type="text" name="mobileNumber" class="form-control" formControlName="mobileNumber" id="mobileNumber" placeholder="Mobile number" />
+        </div>
+        <div class="col-md-1">
+          <label for="gst" class="w-78">GST : (%)</label>
+        </div>
+        <div class="col-md-2">
+          <input type="text" name="gst" class="form-control" formControlName="gst" id="gst" [(ngModel)]="gst" (ngModelChange)="claculateGST()" placeholder="GST"/>
+        </div>
+        <div class="col-md-1">
+          <label for="cgst" class="w-78">CGST : (%)</label>
+        </div>
+        <div class="col-md-2">
+          <input type="text" name="cgst" class="form-control" formControlName="cgst" id="cgst" placeholder="CGST" disabled/>
+        </div>
+        <div class="col-md-1">
+          <label for="sgst" class="w-78">SGST : (%)</label>
+        </div>
+        <div class="col-md-2">
+          <input type="text" name="sgst" class="form-control" formControlName="sgst" id="sgst" placeholder="SGST" disabled />
+        </div>
+
+      </div>
+      <div class="row" style="margin-top: 20px">
+        <div class="col-md-2">
+          <label for="productName">Select Product :</label>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <ng-select
+            [items]="products"
+            name="productName"
+            bindLabel="name"
+            bindValue="name"
+            formControlName="productName"
+            placeholder="Select type" >
+          </ng-select>
         </div>
       </div>
-    </div>
-    <div class="col-md-2">
-      <label for="receiptDate">Receipt Date :</label>&nbsp;<i class="fa fa-asterisk" style="color:red; font-size:10px;"></i>
-    </div>
-    <div class="col-md-3">
-      <div class="form-group">
-        <input type="text" name="receiptDate" [bsConfig]="{ dateInputFormat: 'DD-MM-YYYY', isAnimated: true,  adaptivePosition: true }" placeholder="Receipt date" class="form-control" formControlName="receiptDate" [ngClass]="{ 'is-invalid': submitted && f.receiptDate.errors }" bsDatepicker style="margin-left: -28px;">
-        <div *ngIf="submitted && f.receiptDate.errors" class="text-danger">
-          <div *ngIf="f.receiptDate.errors.required"> Please enter receipt name.</div>
-        </div>
+      <div class="col-md-1">
+        <label for="quantity" class="w-78">Quantity :</label>
       </div>
-    </div>
-    <div class="col-md-1">
-      <label for="gst" class="w-78">GST : (%)</label>
-    </div>
       <div class="col-md-2">
-        <input type="text" name="gst" class="form-control" formControlName="gst" id="gst" [(ngModel)]="gst" (ngModelChange)="claculateGST()" placeholder="GST"/>
-    </div>
-    <div class="col-md-1">
-      <label for="cgst" class="w-78">CGST : (%)</label>
-    </div>
-      <div class="col-md-2">
-        <input type="text" name="cgst" class="form-control" formControlName="cgst" id="cgst" placeholder="CGST" disabled/>
-    </div>
-    <div class="col-md-1">
-      <label for="sgst" class="w-78">SGST : (%)</label>
-    </div>
-      <div class="col-md-2">
-        <input type="text" name="sgst" class="form-control" formControlName="sgst" id="sgst" placeholder="SGST" disabled />
-    </div>
-    <div class="col-md-1">
-      <label for="igst" class="w-78">IGST : (%)</label>
-    </div>
-      <div class="col-md-2">
-        <input type="text" name="igst" class="form-control" formControlName="igst" id="igst" placeholder="IGST" disabled/>
+        <input type="text" name="quantity" class="form-control" formControlName="quantity" id="quantity" placeholder="quantity"/>
       </div>
-    </div>
-  <div class="row" style="margin-top: 20px">
-    <div class="col-md-2">
-      <label for="productName">Select Product :</label>
-    </div>
-    <div class="col-md-3">
-      <div class="form-group">
-        <ng-select
-         [items]="products"
-         name="productName"
-          bindLabel="name"
-          bindValue="name"
-          formControlName="productName"
-         placeholder="Select type" >
-      </ng-select>
-    </div>
-  </div>
-  <div class="col-md-1">
-    <label for="quantity" class="w-78">Quantity :</label>
-  </div>
-    <div class="col-md-2">
-      <input type="text" name="quantity" class="form-control" formControlName="quantity" id="quantity" placeholder="quantity"/>
-    </div>
-    <div class="col-md-1">
-      <label for="rate" class="w-78">Rate :</label>
-    </div>
+      <div class="col-md-1">
+        <label for="rate" class="w-78">Rate :</label>
+      </div>
       <div class="col-md-2">
         <input type="text" name="rate" class="form-control" formControlName="rate" id="rate" placeholder="rate"/>
       </div>
       <div class="col-md-1">
         <button type="button" class="btn btn-info btn-sm" (click)="calc()"><i class="fas fa-plus"></i> Add</button>
       </div>
-  </div>
-    </form>
-  </div>
-  <table class="table table-bordered table-striped">
-    <thead class="gradient">
-      <tr>
-        <th>#</th>
-        <th>Product</th>
-        <th>Quantity</th>
-        <th>Rate</th>
-        <th>Taxable Amount</th>
-        <th>GST (%)</th>
-        <th>CGST</th>
-        <th>SGST</th>
-        <th>IGST</th>
-        <th>Total</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let data of invoiceArray| filter: textSearch | paginate: { itemsPerPage: 10, currentPage: p }; let i = index ">
-        <td>{{i+1}}</td>
-        <td>
-          {{data.productName}}
-        </td>
-        <td>{{data.quantity}}</td>
-        <td>{{data.rate}}</td>
-        <td>{{data.taxableAmount}}</td>
-        <td>{{data.gst}}</td>
-        <td>{{data.cgst}}</td>
-        <td>{{data.sgst}}</td>
-        <td>{{data.igst}}</td>
-        <td>{{data.total}}</td>
-
-        <td>
-          <i class="fas fa-edit text-primary curser" (click)="editinvoiceRow(i, data)"></i> &nbsp;
-          <i class="fas fa-trash text-danger curser" (click)="removeRow(i,  data)"></i>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="4"></td>
-        <td>{{taxableAmountSum}}</td>
-        <td colspan="1"></td>
-        <td>{{cgstSum}}</td>
-        <td>{{sgstSum}}</td>
-        <td>Grand Total</td>
-        <td>{{grandTotal}}</td>
-        <td></td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="row">
-    <div class="col-md-8"></div>
-    <div class="col-md-4">
-      <button class="btn btn-primary btn-sm float-right" (click)="onSubmit()"><i class="fas fa-save"></i> Save</button>
     </div>
+  </form>
+</div>
+<table class="table table-bordered table-striped">
+  <thead class="gradient">
+    <tr>
+      <th>#</th>
+      <th>Product</th>
+      <th>Quantity</th>
+      <th>Rate</th>
+      <th>Taxable Amount</th>
+      <th>GST (%)</th>
+      <th>CGST</th>
+      <th>SGST</th>
+      <th>IGST</th>
+      <th>Total</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let data of invoiceArray| filter: textSearch | paginate: { itemsPerPage: 10, currentPage: p }; let i = index ">
+      <td>{{i+1}}</td>
+      <td>
+        {{data.productName}}
+      </td>
+      <td>{{data.quantity}}</td>
+      <td>{{data.rate}}</td>
+      <td>{{data.taxableAmount}}</td>
+      <td>{{data.gst}}</td>
+      <td>{{data.cgst}}</td>
+      <td>{{data.sgst}}</td>
+      <td>{{data.igst}}</td>
+      <td>{{data.total}}</td>
+
+      <td>
+        <i class="fas fa-edit text-primary curser" (click)="editinvoiceRow(i, data)"></i> &nbsp;
+        <i class="fas fa-trash text-danger curser" (click)="removeRow(i,  data)"></i>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4"></td>
+      <td>{{taxableAmountSum}}</td>
+      <td colspan="1"></td>
+      <td>{{cgstSum}}</td>
+      <td>{{sgstSum}}</td>
+      <td>Grand Total</td>
+      <td>{{grandTotal}}</td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<div class="row">
+  <div class="col-md-8"></div>
+  <div class="col-md-4">
+    <button class="btn btn-primary btn-sm float-right" (click)="onSubmit()"><i class="fas fa-save"></i> Save</button>
   </div>
-  <!-- <pagination-controls (pageChange)="p = $event"></pagination-controls > -->
+</div>
+<pagination-controls (pageChange)="p = $event"></pagination-controls >
 </div>

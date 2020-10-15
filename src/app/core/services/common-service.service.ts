@@ -9,7 +9,7 @@ export class CommonServiceService {
   constructor(private http: HttpClient) { }
   private baseUrl = 'http://localhost:3000/';
 
-//Login Sevice
+  //Login Sevice
   login(loginData) {
     console.log('inside login serice');
     return this.http.post( this.baseUrl + 'user/login', loginData);
@@ -19,6 +19,23 @@ export class CommonServiceService {
   saveProduct(product) {
     return this.http.post(this.baseUrl + 'products/', product);
   }
+
+  //POST Product
+  saveReceipt(receipt) {
+    return this.http.post(this.baseUrl + 'receipt/', receipt);
+  }
+
+  //GET Rceipt
+  getReceipt() {
+    return this.http.get( this.baseUrl + 'receipt');
+  }
+
+  //Delete Receipt
+  deleteReceipt(id) {
+    return this.http.delete( this.baseUrl + 'receipt/' + id);
+  }
+
+
 
   getProducts() {
     return this.http.get( this.baseUrl + 'products');
@@ -85,8 +102,8 @@ export class CommonServiceService {
     return this.http.delete( this.baseUrl + 'credit/' + id);
   }
 
-   //GET Users
-   getUsers() {
+  //GET Users
+  getUsers() {
     return this.http.get( this.baseUrl + 'user');
   }
 

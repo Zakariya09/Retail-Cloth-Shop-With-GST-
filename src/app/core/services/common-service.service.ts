@@ -25,6 +25,11 @@ export class CommonServiceService {
     return this.http.post(this.baseUrl + 'receipt/', receipt);
   }
 
+    //Update Product
+    updateReceipt(id, data) {
+      return this.http.put( this.baseUrl + 'receipt/' + id, data);
+    }
+
   //GET Rceipt
   getReceipt() {
     return this.http.get( this.baseUrl + 'receipt');

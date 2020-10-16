@@ -17,7 +17,7 @@ import { Router } from '@angular/router';
 })
 export class AddReceiptComponent implements OnInit {
   frmReceipt: FormGroup;
-  credit: CreditModel;
+_id = '';
   receipt = {
     _id:'',
     name: '',
@@ -27,12 +27,15 @@ export class AddReceiptComponent implements OnInit {
     cgst: 0,
     sgst: 0,
     grandTotal:0,
-    products: []
+    products: [],
+    gst: ''
   };
   subscription: any;
   grandTotal = 0;
+  receiptDate ;
   mobileNumber;
   today;
+receiptData = JSON.parse(localStorage.getItem('receipt'));
   custName;
   rcDate;
   taxableAmountSum = 0;
@@ -69,6 +72,7 @@ export class AddReceiptComponent implements OnInit {
 
     ngOnInit() {
       this.frmReceipt = this.formBuilder.group({
+        _id: [""],
         customerName: ["", Validators.required],
         receiptDate: ["", Validators.required],
         mobileNumber: [""],
@@ -83,7 +87,9 @@ export class AddReceiptComponent implements OnInit {
       });
       this.getProducts();
       this.getDate();
+      this.editReceipt();
     }
+
 
     //Set Current Day Date to the receipt date
     getDate(){
@@ -94,7 +100,6 @@ export class AddReceiptComponent implements OnInit {
     //GST SUM calculation Start
     claculateGST = function(){
       this.frmReceipt.get('tax').value =  ( this.frmReceipt.get('gst').value / 2) ;
-      console.log(this.frmReceipt.get('tax').value);
       if(!isNaN(this.frmReceipt.get('tax').value)){
         this.frmReceipt.get('cgst').setValue(this.frmReceipt.get('tax').value);
         this.frmReceipt.get('sgst').setValue(this.frmReceipt.get('tax').value);
@@ -116,6 +121,7 @@ export class AddReceiptComponent implements OnInit {
         return;
       }
       this.frmReceipt.get('receiptDate').setValue(this.today);
+      this.receiptDate = this.frmReceipt.get('receiptDate').value;
       this.mobileNumber = this.frmReceipt.get('mobileNumber').value;
       this.invoice.customerName = this.frmReceipt.get('customerName').value;
       this.custName = this.frmReceipt.get('customerName').value;
@@ -128,6 +134,7 @@ export class AddReceiptComponent implements OnInit {
       this.invoice.taxableAmount =  this.invoice.rate  * this.invoice.quantity;
       this.taxableAmountSum += this.invoice.taxableAmount;
       this.invoice.gst = this.frmReceipt.get('gst').value;
+      this.gst  = this.frmReceipt.get('gst').value;
       if(this.invoice.gst == undefined || this.invoice.gst == null){
         this.invoice.cgst = 0;
         this.invoice.sgst = 0;
@@ -160,7 +167,6 @@ export class AddReceiptComponent implements OnInit {
         igst: 0,
         total:0
       }
-      console.log(this.invoiceArray)
       this.frmReceipt.reset();
       this.submitted = false;
       this.frmReceipt.get('receiptDate').setValue(this.today);
@@ -173,6 +179,26 @@ export class AddReceiptComponent implements OnInit {
       this.router.navigate(['default/receipt']);
     }
 
+    //Edit Receipt
+    editReceipt(){
+      if(this.receiptData!= null){
+        this._id =  this.receiptData._id
+      this.frmReceipt.get('customerName').setValue(this.receiptData.name);
+      this.frmReceipt.get('receiptDate').setValue(this.receiptData.receiptDate);
+      this.frmReceipt.get('gst').setValue(parseInt(this.receiptData.gst));
+      this.gst = parseInt(this.receiptData.gst)
+      this.frmReceipt.get('mobileNumber').setValue(this.receiptData.mobileNumber);
+      this.mobileNumber = this.receiptData.mobileNumber;
+      this.taxableAmountSum = parseInt(this.receiptData.taxableAmount);
+      this.grandTotal = parseInt(this.receiptData.grandTotal);
+      this.cgstSum = parseInt(this.receiptData.cgst);
+      this.sgstSum = parseInt(this.receiptData.cgst);
+      this.invoiceArray = this.receiptData.products;
+      this.custName = this.receiptData.name;
+      this.rcDate = this.receiptData.receiptDate;
+    }
+      };
+
     //POST package
     onSubmit(){
       this.receipt.name = this.custName;
@@ -182,17 +208,15 @@ export class AddReceiptComponent implements OnInit {
       this.receipt.sgst = this.sgstSum;
       this.receipt.grandTotal = this.grandTotal;
       this.receipt.products = this.invoiceArray;
-      this.receipt.mobileNumber = this.mobileNumber
-
-      console.log(this.receipt);
-
+      this.receipt.mobileNumber = this.mobileNumber;
+      this.receipt.gst = this.gst;
+      this.receipt._id = this._id;
       this.submitted = true;
       if (this.frmReceipt.invalid) {
         this.toaster.warningToastr('Please enter mendatory fields.', 'Invalid!', {showCloseButton: true});
         return;
       }
       if(this.receipt._id == ''){
-        console.log('inside save');
         this.receipt.receiptDate = moment(this.frmReceipt.value.date).format('DD-MM-YYYY') ;
         this.subscription = this.commonService.saveReceipt(this.receipt).subscribe((response: any) => {
           if (response.status) {
@@ -206,12 +230,14 @@ export class AddReceiptComponent implements OnInit {
               cgst: 0,
               sgst: 0,
               grandTotal:0,
-              products: []
+              products: [],
+              gst:''
             };
             this.taxableAmountSum =0;
             this.cgstSum = 0;
             this.sgstSum = 0;
             this.grandTotal = 0
+            this._id = '';
             this.invoiceArray=[];
             this.frmReceipt.reset();
             this.submitted =false;
@@ -228,11 +254,10 @@ export class AddReceiptComponent implements OnInit {
         });
       }
       else{
-        console.log('inside update');
         this.receipt.receiptDate = moment(this.frmReceipt.value.date).format('DD-MM-YYYY') ;
-        this.subscription = this.commonService.updateCredit(this.receipt._id, this.receipt).subscribe((response: any) => {
+        this.subscription = this.commonService.updateReceipt(this.receipt._id, this.receipt).subscribe((response: any) => {
           if (response.status) {
-            this.toaster.successToastr('Sales updated successfully. ', 'Success!',{showCloseButton: true});
+            this.toaster.successToastr('Invoice updated successfully. ', 'Success!',{showCloseButton: true});
             // this.getCredits();
             this.receipt = {
               _id:'',
@@ -243,11 +268,18 @@ export class AddReceiptComponent implements OnInit {
               cgst: 0,
               sgst: 0,
               grandTotal:0,
-              products: []
+              products: [],
+              gst:''
             };
+            this._id = '';
+            this.taxableAmountSum =0;
+            this.cgstSum = 0;
+            this.sgstSum = 0;
+            this.grandTotal = 0
             this.frmReceipt.reset();
             this.submitted =false
             this.invoiceArray=[];
+            this.router.navigate(['default/receipt']);
           } else {
             this.toaster.errorToastr('Error while saving receipt.', 'Oops!',{showCloseButton: true});
           }
@@ -276,7 +308,6 @@ export class AddReceiptComponent implements OnInit {
 
     //Edit invoiceRow
     editinvoiceRow(index, data){
-      console.log(data);
       this.grandTotal -= data.total;
       this.invoiceArray.splice(index,1);
       if(!this.invoiceArray.length){
@@ -332,7 +363,6 @@ export class AddReceiptComponent implements OnInit {
       }
 
       removeRow(index, data){
-        console.log(data);
         this.invoiceArray.splice(index,1);
         this.grandTotal = this.grandTotal - data.total;
         this.taxableAmountSum = this.taxableAmountSum - data.taxableAmount;

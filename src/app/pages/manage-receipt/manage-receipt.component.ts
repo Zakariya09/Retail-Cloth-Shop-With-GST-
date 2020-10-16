@@ -56,6 +56,7 @@ constructor(private commonService: CommonServiceService,
 
   addReceipt(){
    this.router.navigate(['default/addReceipt']);
+   localStorage.clear();
   }
 
 
@@ -67,7 +68,6 @@ constructor(private commonService: CommonServiceService,
   this.commonService.getReceipt().subscribe((response : any)=>{
     if (response.status) {
     this.receipts = response.data;
-    console.log(this.receipts);
     }else {
       this.toaster.errorToastr('No receipt found!.', 'Oops!',{showCloseButton: true});
       }
@@ -78,12 +78,8 @@ constructor(private commonService: CommonServiceService,
 }
 //Edit package
 editReceipt(data){
-  this.frmreceipt.controls.date.setValue(this.dateConverter(data.date));
-  this.frmreceipt.controls.name.setValue(data.name);
-  this.frmreceipt.controls.receiptAmount.setValue(data.receiptAmount);
-  this.frmreceipt.controls.paidAmount.setValue(data.paidAmount);
-  this.frmreceipt.controls.remainingAmount.setValue(data.remainingAmount);
-  this.frmreceipt.controls._id.setValue(data._id);
+  localStorage.setItem('receipt', JSON.stringify(data));
+  this.router.navigate(['/default/addReceipt']);
  }
 
  //Delete package
